@@ -1,132 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paragraph Generator API</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            max-width: 800px; 
-            margin: 50px auto; 
-            padding: 20px; 
-            background-color: #f8f9fa;
-        }
-        .container { 
-            background: #ffffff; 
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        button { 
-            background: #007cba; 
-            color: white; 
-            padding: 12px 24px; 
-            border: none; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        button:hover { 
-            background: #005a87; 
-        }
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .output { 
-            background: #f8f9fa; 
-            padding: 20px; 
-            margin: 20px 0; 
-            border-radius: 8px; 
-            border-left: 4px solid #007cba; 
-            line-height: 1.6;
-            max-height: none; /* Remove height restriction */
-            min-height: 200px; /* Ensure minimum height */
-            overflow-y: auto;
-            border: 1px solid #ddd;
-        }
-        input, select { 
-            padding: 10px; 
-            margin: 8px; 
-            border: 1px solid #ddd; 
-            border-radius: 6px; 
-            font-size: 14px;
-        }
-        .form-group {
-            margin: 15px 0;
-        }
-        label {
-            display: inline-block;
-            width: 100px;
-            font-weight: bold;
-        }
-        #paragraph {
-            font-size: 16px;
-            text-align: justify;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            max-width: 100%;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-wrap: break-word;
-            word-break: break-word;
-            /* Remove any text truncation */
-            text-overflow: clip;
-            -webkit-line-clamp: none;
-            display: block;
-        }
-        .stats {
-            color: #666;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        .api-section {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid #eee;
-        }
-        pre {
-            background: #f4f4f4;
-            padding: 15px;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-size: 14px;
-        }
-        .endpoint {
-            background: #e8f4f8;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-family: monospace;
-            display: inline-block;
-            margin: 2px;
-        }
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 10px;
-            border-radius: 6px;
-            margin: 10px 0;
-            font-size: 14px;
-        }
-        .progress-container {
-            display: none;
-            margin: 10px 0;
+        body {
+            font-family: 'Inter', sans-serif;
         }
         .progress-bar {
             width: 100%;
             height: 6px;
-            background: #e9ecef;
+            background: #e5e7eb;
             border-radius: 3px;
             overflow: hidden;
         }
         .progress-fill {
             height: 100%;
-            background: #007cba;
+            background: #3b82f6;
             width: 0%;
             transition: width 0.3s ease;
             animation: pulse 1.5s infinite;
@@ -136,78 +28,110 @@
             50% { opacity: 0.7; }
             100% { opacity: 1; }
         }
-        .character-count {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
+        #paragraph {
+            text-align: justify;
+            word-break: break-word;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+        .endpoint {
+            background: #eff6ff;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>🔤 Paragraph Generator API</h1>
-        <p>Generate random paragraphs using AI-powered word combinations. Create content for testing, placeholders, or creative writing.</p>
-        
-        <div class="form-group">
-            <label for="sentences">Sentences:</label>
-            <input type="number" id="sentences" value="5" min="1" max="1000" placeholder="Number of sentences">
-            
-            <label for="style">Style:</label>
-            <select id="style">
-                <option value="general">General</option>
-                <option value="formal">Formal</option>
-                <option value="casual">Casual</option>
-            </select>
-            
-            <button onclick="generateParagraph()" id="generateBtn">Generate Paragraph</button>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container bg-white p-8 rounded-2xl shadow-lg max-w-3xl w-full mx-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 flex items-center">
+            <span class="mr-2">🔤</span> Paragraph Generator API
+        </h1>
+        <p class="text-gray-600 mb-6">
+            Generate random paragraphs using AI-powered word combinations. Create content for testing, placeholders, or creative writing.
+        </p>
+
+        <div class="form-group mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div class="flex-1">
+                    <label for="sentences" class="block text-sm font-medium text-gray-700 mb-1">Sentences</label>
+                    <input type="number" id="sentences" value="5" min="1" max="500" placeholder="Number of sentences"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           aria-label="Number of sentences to generate">
+                </div>
+                <div class="flex-1">
+                    <label for="style" class="block text-sm font-medium text-gray-700 mb-1">Style</label>
+                    <select id="style" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            aria-label="Paragraph style">
+                        <option value="general">General</option>
+                        <option value="formal">Formal</option>
+                        <option value="casual">Casual</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="generateParagraph()" id="generateBtn"
+                    class="mt-4 w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    aria-label="Generate a new paragraph">
+                Generate Paragraph
+            </button>
         </div>
-        
-        <div id="warning" class="warning" style="display:none;">
+
+        <div id="warning" class="hidden bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg mb-6">
             ⚠️ <strong>Large Request:</strong> Generating many sentences may take longer to process and display.
         </div>
-        
-        <div id="progressContainer" class="progress-container">
+
+        <div id="error" class="hidden bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg mb-6">
+            ⚠️ <strong>Error:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <div id="progressContainer" class="hidden mb-6">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div style="text-align: center; margin-top: 5px; font-size: 14px; color: #666;">
-                Generating paragraph...
-            </div>
+            <div class="text-center text-sm text-gray-600 mt-2">Generating paragraph...</div>
         </div>
-        
-        <div id="output" class="output" style="display:none;">
-            <h3>Generated Paragraph:</h3>
-            <div style="margin-bottom: 10px;">
-                <button onclick="copyToClipboard()" style="background: #28a745; padding: 8px 16px; font-size: 14px;">📋 Copy Text</button>
-                <button onclick="toggleWrap()" id="wrapBtn" style="background: #6c757d; padding: 8px 16px; font-size: 14px; margin-left: 10px;">📝 Toggle Wrap</button>
-                <button onclick="downloadText()" style="background: #17a2b8; padding: 8px 16px; font-size: 14px; margin-left: 10px;">💾 Download</button>
-                <button onclick="expandText()" id="expandBtn" style="background: #ffc107; color: #000; padding: 8px 16px; font-size: 14px; margin-left: 10px; display: none;">🔍 Show Full Text</button>
+
+        <div id="output" class="hidden bg-gray-50 p-6 rounded-lg border-l-4 border-blue-600 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Generated Paragraph</h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button onclick="copyToClipboard()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                        aria-label="Copy paragraph to clipboard">📋 Copy Text</button>
+                <button onclick="toggleWrap()" id="wrapBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+                        aria-label="Toggle text wrapping">📝 Toggle Wrap</button>
+                <button onclick="downloadText()" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition"
+                        aria-label="Download paragraph as text file">💾 Download</button>
+                <button onclick="expandText()" id="expandBtn" class="hidden bg-yellow-400 text-gray-800 px-4 py-2 rounded-lg hover:bg-yellow-500 transition"
+                        aria-label="Show full paragraph text">🔍 Show Full Text</button>
             </div>
-            <div id="paragraph"></div>
-            <div id="stats" class="stats"></div>
-            <div id="charCount" class="character-count"></div>
+            <div id="paragraph" class="text-gray-700 text-base leading-relaxed"></div>
+            <div id="stats" class="text-gray-600 text-sm mt-4"></div>
+            <div id="charCount" class="text-gray-500 text-xs mt-2"></div>
         </div>
-        
-        <div class="api-section">
-            <h3>📡 API Endpoints:</h3>
-            <ul>
+
+        <div class="api-section border-t pt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">📡 API Endpoints</h3>
+            <ul class="list-disc pl-5 text-gray-600 mb-6">
                 <li><span class="endpoint">GET/POST /generate</span> - Generate paragraphs</li>
                 <li><span class="endpoint">GET /health</span> - Health check</li>
                 <li><span class="endpoint">GET /info</span> - API information</li>
             </ul>
-            
-            <h3>💡 Example Usage:</h3>
-            <h4>GET Request:</h4>
-            <pre>/generate?sentences=10&style=formal</pre>
-            
-            <h4>POST Request:</h4>
-            <pre>{
+
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">💡 Example Usage</h3>
+            <h4 class="text-base font-medium text-gray-700 mb-2">GET Request</h4>
+            <pre class="bg-gray-100 p-4 rounded-lg text-sm">/generate?sentences=10&style=formal</pre>
+
+            <h4 class="text-base font-medium text-gray-700 mb-2 mt-4">POST Request</h4>
+            <pre class="bg-gray-100 p-4 rounded-lg text-sm">{
   "sentences": 8,
   "style": "casual"
 }</pre>
 
-            <h4>cURL Examples:</h4>
-            <pre># GET request
+            <h4 class="text-base font-medium text-gray-700 mb-2 mt-4">cURL Examples</h4>
+            <pre class="bg-gray-100 p-4 rounded-lg text-sm"># GET request
 curl "http://localhost:8080/generate?sentences=5&style=general"
 
 # POST request
@@ -218,38 +142,39 @@ curl -X POST http://localhost:8080/generate \
     </div>
 
     <script>
+        const API_BASE_URL = 'http://localhost:8080'; // Configurable API base URL
+
         async function generateParagraph() {
             const sentences = parseInt(document.getElementById('sentences').value) || 5;
             const style = document.getElementById('style').value;
             const generateBtn = document.getElementById('generateBtn');
             const output = document.getElementById('output');
             const warning = document.getElementById('warning');
+            const error = document.getElementById('error');
+            const errorMessage = document.getElementById('errorMessage');
             const progressContainer = document.getElementById('progressContainer');
             const progressFill = document.getElementById('progressFill');
-            
+
             // Show warning for large requests
-            if (sentences > 100) {
-                warning.style.display = 'block';
-            } else {
-                warning.style.display = 'none';
-            }
-            
+            warning.style.display = sentences > 100 ? 'block' : 'none';
+            error.style.display = 'none'; // Hide error on new request
+
             // Show loading state
             generateBtn.textContent = 'Generating...';
             generateBtn.disabled = true;
             progressContainer.style.display = 'block';
             document.body.classList.add('loading');
-            
+
             // Animate progress bar
             let progress = 0;
             const progressInterval = setInterval(() => {
-                progress += Math.random() * 15;
+                progress += 5; // Controlled increment
                 if (progress > 90) progress = 90;
-                progressFill.style.width = progress + '%';
+                progressFill.style.width = `${progress}%`;
             }, 200);
-            
+
             try {
-                const response = await fetch('/generate', {
+                const response = await fetch(`${API_BASE_URL}/generate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -259,78 +184,55 @@ curl -X POST http://localhost:8080/generate \
                         style: style || 'general'
                     })
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                
+
                 if (data.error) {
                     throw new Error(data.error);
                 }
-                
+
                 // Complete progress bar
                 clearInterval(progressInterval);
                 progressFill.style.width = '100%';
-                
-                // Display results - FORCE FULL TEXT DISPLAY
-                console.log('Full API response:', data); // Debug log
-                console.log('Paragraph length:', data.paragraph.length); // Debug log
-                console.log('First 500 chars:', data.paragraph.substring(0, 500)); // Debug log
-                console.log('Last 500 chars:', data.paragraph.substring(Math.max(0, data.paragraph.length - 500))); // Debug log
-                
-                // Clear any existing content first
+
+                // Display results
                 const paragraphElement = document.getElementById('paragraph');
                 paragraphElement.innerHTML = ''; // Clear first
-                
-                // Set the full text content - use innerHTML to ensure no truncation
                 paragraphElement.textContent = data.paragraph;
-                
-                // Double check the content was set properly
-                console.log('Element content length after setting:', paragraphElement.textContent.length);
-                console.log('Element innerHTML length:', paragraphElement.innerHTML.length);
-                
-                // Force a reflow
+
+                // Force reflow
                 paragraphElement.style.display = 'none';
-                paragraphElement.offsetHeight; // Trigger reflow
+                paragraphElement.offsetHeight;
                 paragraphElement.style.display = 'block';
-                
-                // Calculate character count
+
+                // Calculate stats
                 const charCount = data.paragraph.length;
                 const wordCount = data.paragraph.split(/\s+/).filter(word => word.length > 0).length;
-                
-                // Use word_count from API if available, otherwise calculate
                 const apiWordCount = data.word_count || wordCount;
-                
-                document.getElementById('stats').innerHTML = 
+
+                document.getElementById('stats').innerHTML =
                     `📊 <strong>Words:</strong> ${apiWordCount} | <strong>Sentences:</strong> ${data.sentences} | <strong>Style:</strong> ${style} | <strong>Requested:</strong> ${sentences}`;
-                
-                document.getElementById('charCount').innerHTML = 
+
+                document.getElementById('charCount').innerHTML =
                     `📝 <strong>Characters:</strong> ${charCount.toLocaleString()} | <strong>Characters (no spaces):</strong> ${data.paragraph.replace(/\s/g, '').length.toLocaleString()}`;
-                
-                // Alert if there's a mismatch between requested and returned sentences
-                if (data.sentences !== sentences) {
-                    console.warn(`Sentence count mismatch: requested ${sentences}, got ${data.sentences}`);
-                }
-                
-                // Check if text might be truncated and show expand button
-                if (charCount > 10000) { // For very large texts
-                    document.getElementById('expandBtn').style.display = 'inline-block';
-                }
-                
+
+                // Show expand button for large texts
+                document.getElementById('expandBtn').style.display = charCount > 10000 ? 'inline-block' : 'none';
+
                 output.style.display = 'block';
                 warning.style.display = 'none';
-                
-                // Scroll to results
                 output.scrollIntoView({ behavior: 'smooth' });
-                
+
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error generating paragraph: ' + error.message);
+                errorMessage.textContent = error.message;
+                error.style.display = 'block';
                 clearInterval(progressInterval);
             } finally {
-                // Reset button state
                 generateBtn.textContent = 'Generate Paragraph';
                 generateBtn.disabled = false;
                 progressContainer.style.display = 'none';
@@ -341,42 +243,31 @@ curl -X POST http://localhost:8080/generate \
 
         // Allow Enter key to generate
         document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON') {
                 generateParagraph();
             }
         });
 
-        // Validate sentence count and show warnings
+        // Validate sentence count
         document.getElementById('sentences').addEventListener('input', function(e) {
             const value = parseInt(e.target.value);
             const warning = document.getElementById('warning');
-            
             if (value < 1) e.target.value = 1;
-            if (value > 1000) e.target.value = 1000;
-            
-            // Show warning for large values
-            if (value > 100) {
-                warning.style.display = 'block';
-            } else {
-                warning.style.display = 'none';
-            }
+            if (value > 500) e.target.value = 500;
+            warning.style.display = value > 100 ? 'block' : 'none';
         });
 
-        // Copy to clipboard function
+        // Copy to clipboard
         function copyToClipboard() {
             const paragraph = document.getElementById('paragraph').textContent;
-            navigator.clipboard.writeText(paragraph).then(function() {
-                alert('Paragraph copied to clipboard!');
-            }, function(err) {
+            navigator.clipboard.writeText(paragraph).then(() => {
+                const btn = document.querySelector('button[onclick="copyToClipboard()"]');
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => btn.textContent = '📋 Copy Text', 2000);
+            }, (err) => {
                 console.error('Could not copy text: ', err);
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = paragraph;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                alert('Paragraph copied to clipboard!');
+                // Fallback removed as execCommand is deprecated
+                alert('Failed to copy text. Please select and copy manually.');
             });
         }
 
@@ -384,7 +275,6 @@ curl -X POST http://localhost:8080/generate \
         function toggleWrap() {
             const paragraph = document.getElementById('paragraph');
             const wrapBtn = document.getElementById('wrapBtn');
-            
             if (paragraph.style.whiteSpace === 'nowrap') {
                 paragraph.style.whiteSpace = 'pre-wrap';
                 paragraph.style.overflow = 'visible';
@@ -396,37 +286,28 @@ curl -X POST http://localhost:8080/generate \
             }
         }
 
-        // Expand text function to ensure full display
+        // Expand text
         function expandText() {
             const paragraph = document.getElementById('paragraph');
             const expandBtn = document.getElementById('expandBtn');
             const output = document.getElementById('output');
-            
-            // Remove any CSS restrictions
             paragraph.style.maxHeight = 'none';
             paragraph.style.height = 'auto';
             paragraph.style.overflow = 'visible';
             output.style.maxHeight = 'none';
-            
-            // Force re-render
             paragraph.style.display = 'none';
             paragraph.offsetHeight;
             paragraph.style.display = 'block';
-            
             expandBtn.style.display = 'none';
-            
-            console.log('Text expanded. Current length:', paragraph.textContent.length);
         }
 
-        // Download text as file
+        // Download text
         function downloadText() {
             const paragraph = document.getElementById('paragraph').textContent;
             const sentences = document.getElementById('sentences').value;
             const style = document.getElementById('style').value;
-            
             const blob = new Blob([paragraph], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
-            
             const a = document.createElement('a');
             a.href = url;
             a.download = `paragraph_${sentences}_sentences_${style}.txt`;
