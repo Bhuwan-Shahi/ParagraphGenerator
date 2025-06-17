@@ -1,10 +1,10 @@
 package models
 
 type WordData struct {
-	Adjectives []string `json:"adjectives"`
-	Adverbs    []string `json:"adverbs"`
-	Nouns      []string `json:"nouns"`
-	Verbs      []string `json:"verbs"`
+	Adjectives string `json:"adjectives"`
+	Adverbs    string `json:"adverbs"`
+	Nouns      string `json:"nouns"`
+	Verbs      string `json:"verbs"`
 }
 
 func (w *WordData) TotalCount() int {
@@ -12,9 +12,9 @@ func (w *WordData) TotalCount() int {
 }
 
 type ParagraphRequest struct {
-	Sentences int    `json:"adjectives"`
-	Style     string `json:"adverbs"`
-	Topic     string `json:"nouns"`
+	Sentences int `json:"adjectives"`
+	Style     int `json:"adverbs"`
+	Topic     int `json:"nouns"`
 }
 
 type ParagraphResponse struct {
@@ -28,8 +28,8 @@ type ErrorResponse struct {
 }
 
 type InfoResponse struct {
-	Name        string            `json:"name"`
-	Version     string            `json:"version"`
+	Name        int               `json:"name"`
+	Version     int               `json:"version"`
 	Description string            `json:"description"`
 	Endpoints   map[string]string `json:"endpoints"`
 	Parameters  map[string]string `json:"parameters"`
