@@ -33,6 +33,7 @@
             word-break: break-word;
             white-space: pre-wrap;
             overflow-wrap: break-word;
+            min-height: 100px;
         }
         .endpoint {
             background: #eff6ff;
@@ -131,7 +132,7 @@
 
             <h4 class="text-base font-medium text-gray-700 mb-2 mt-4">cURL Examples</h4>
             <pre class="bg-gray-100 p-4 rounded-lg text-sm"># GET request
-curl "http://localhost:8080/generate?sentences=5&style=general"
+curl "https://paragraphgenerator.up.railway.app/generate?sentences=5&style=general"
 
 # POST request
 curl -X POST http://localhost:8080/generate \
@@ -141,7 +142,7 @@ curl -X POST http://localhost:8080/generate \
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:8080'; // Configurable API base URL
+        const API_BASE_URL = 'https://paragraphgenerator.up.railway.app'; // Configurable API base URL
 
         async function generateParagraph() {
             const sentences = parseInt(document.getElementById('sentences').value) || 5;
@@ -149,14 +150,14 @@ curl -X POST http://localhost:8080/generate \
             const generateBtn = document.getElementById('generateBtn');
             const output = document.getElementById('output');
             const warning = document.getElementById('warning');
-            const error = document.getElementById('error');
+            const errorDiv = document.getElementById('error');
             const errorMessage = document.getElementById('errorMessage');
             const progressContainer = document.getElementById('progressContainer');
             const progressFill = document.getElementById('progressFill');
 
             // Show warning for large requests
             warning.style.display = sentences > 100 ? 'block' : 'none';
-            error.style.display = 'none'; // Hide error on new request
+            errorDiv.style.display = 'none'; // Hide error on new request
 
             // Show loading state
             generateBtn.textContent = 'Generating...';
@@ -189,6 +190,7 @@ curl -X POST http://localhost:8080/generate \
                 }
 
                 const data = await response.json();
+                console.log('API Response:', data); // Debug log
 
                 if (data.error) {
                     throw new Error(data.error);
@@ -198,26 +200,33 @@ curl -X POST http://localhost:8080/generate \
                 clearInterval(progressInterval);
                 progressFill.style.width = '100%';
 
-                // Display results
+                // Display results - Fixed the display logic
                 const paragraphElement = document.getElementById('paragraph');
-                paragraphElement.innerHTML = ''; // Clear first
-                paragraphElement.textContent = data.paragraph;
-
-                // Force reflow
-                paragraphElement.style.display = 'none';
-                paragraphElement.offsetHeight;
-                paragraphElement.style.display = 'block';
+                
+                // Clear previous content
+                paragraphElement.textContent = '';
+                
+                // Set the new content
+                if (data.paragraph) {
+                    paragraphElement.textContent = data.paragraph;
+                } else if (data.text) {
+                    paragraphElement.textContent = data.text;
+                } else {
+                    throw new Error('No paragraph content received from API');
+                }
 
                 // Calculate stats
-                const charCount = data.paragraph.length;
-                const wordCount = data.paragraph.split(/\s+/).filter(word => word.length > 0).length;
+                const paragraphText = paragraphElement.textContent;
+                const charCount = paragraphText.length;
+                const wordCount = paragraphText.split(/\s+/).filter(word => word.length > 0).length;
                 const apiWordCount = data.word_count || wordCount;
+                const apiSentences = data.sentences || sentences;
 
                 document.getElementById('stats').innerHTML =
-                    `📊 <strong>Words:</strong> ${apiWordCount} | <strong>Sentences:</strong> ${data.sentences} | <strong>Style:</strong> ${style} | <strong>Requested:</strong> ${sentences}`;
+                    `📊 <strong>Words:</strong> ${apiWordCount} | <strong>Sentences:</strong> ${apiSentences} | <strong>Style:</strong> ${style} | <strong>Requested:</strong> ${sentences}`;
 
                 document.getElementById('charCount').innerHTML =
-                    `📝 <strong>Characters:</strong> ${charCount.toLocaleString()} | <strong>Characters (no spaces):</strong> ${data.paragraph.replace(/\s/g, '').length.toLocaleString()}`;
+                    `📝 <strong>Characters:</strong> ${charCount.toLocaleString()} | <strong>Characters (no spaces):</strong> ${paragraphText.replace(/\s/g, '').length.toLocaleString()}`;
 
                 // Show expand button for large texts
                 document.getElementById('expandBtn').style.display = charCount > 10000 ? 'inline-block' : 'none';
@@ -229,7 +238,7 @@ curl -X POST http://localhost:8080/generate \
             } catch (error) {
                 console.error('Error:', error);
                 errorMessage.textContent = error.message;
-                error.style.display = 'block';
+                errorDiv.style.display = 'block';
                 clearInterval(progressInterval);
             } finally {
                 generateBtn.textContent = 'Generate Paragraph';
@@ -238,6 +247,27 @@ curl -X POST http://localhost:8080/generate \
                 progressFill.style.width = '0%';
                 document.body.classList.remove('loading');
             }
+        }
+
+        // Test function to generate sample content without API
+        function generateTestParagraph() {
+            const testParagraph = "This is a test paragraph to verify that the display functionality is working correctly. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
+            
+            const paragraphElement = document.getElementById('paragraph');
+            paragraphElement.textContent = testParagraph;
+            
+            const output = document.getElementById('output');
+            output.style.display = 'block';
+            
+            // Update stats
+            const charCount = testParagraph.length;
+            const wordCount = testParagraph.split(/\s+/).filter(word => word.length > 0).length;
+            
+            document.getElementById('stats').innerHTML =
+                `📊 <strong>Words:</strong> ${wordCount} | <strong>Sentences:</strong> 4 | <strong>Style:</strong> test | <strong>Requested:</strong> test`;
+            
+            document.getElementById('charCount').innerHTML =
+                `📝 <strong>Characters:</strong> ${charCount.toLocaleString()} | <strong>Characters (no spaces):</strong> ${testParagraph.replace(/\s/g, '').length.toLocaleString()}`;
         }
 
         // Allow Enter key to generate
@@ -265,7 +295,6 @@ curl -X POST http://localhost:8080/generate \
                 setTimeout(() => btn.textContent = '📋 Copy Text', 2000);
             }, (err) => {
                 console.error('Could not copy text: ', err);
-                // Fallback removed as execCommand is deprecated
                 alert('Failed to copy text. Please select and copy manually.');
             });
         }
@@ -294,9 +323,6 @@ curl -X POST http://localhost:8080/generate \
             paragraph.style.height = 'auto';
             paragraph.style.overflow = 'visible';
             output.style.maxHeight = 'none';
-            paragraph.style.display = 'none';
-            paragraph.offsetHeight;
-            paragraph.style.display = 'block';
             expandBtn.style.display = 'none';
         }
 
@@ -315,6 +341,15 @@ curl -X POST http://localhost:8080/generate \
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         }
+
+        // Add test button for debugging (remove in production)
+        document.addEventListener('DOMContentLoaded', function() {
+            const testBtn = document.createElement('button');
+            testBtn.textContent = 'Test Display (Debug)';
+            testBtn.className = 'ml-4 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition';
+            testBtn.onclick = generateTestParagraph;
+            document.getElementById('generateBtn').parentNode.appendChild(testBtn);
+        });
     </script>
 </body>
 </html>
