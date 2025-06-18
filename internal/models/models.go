@@ -1,10 +1,10 @@
 package models
 
 type WordData struct {
-	Adjectives string `json:"adjectives"`
-	Adverbs    string `json:"adverbs"`
-	Nouns      string `json:"nouns"`
-	Verbs      string `json:"verbs"`
+	Adjectives []string `json:"adjectives"`
+	Adverbs    []string `json:"adverbs"`
+	Nouns      []string `json:"nouns"`
+	Verbs      []string `json:"verbs"`
 }
 
 func (w *WordData) TotalCount() int {
@@ -28,8 +28,8 @@ type ErrorResponse struct {
 }
 
 type InfoResponse struct {
-	Name        int               `json:"name"`
-	Version     int               `json:"version"`
+	Name        string            `json:"name"`
+	Version     string            `json:"version"`
 	Description string            `json:"description"`
 	Endpoints   map[string]string `json:"endpoints"`
 	Parameters  map[string]string `json:"parameters"`
