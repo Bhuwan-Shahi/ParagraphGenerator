@@ -111,7 +111,6 @@ func (h *Handler) Programming(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	// Get count parameter (default: 1)
 	count := 1
 	if c := r.URL.Query().Get("count"); c != "" {
 		if parsed, err := strconv.Atoi(c); err == nil && parsed > 0 {
@@ -250,10 +249,6 @@ func (h *Handler) Generate(w http.ResponseWriter, r *http.Request) {
 
 	// Count actual words in the generated paragraph
 	wordCount := len(strings.Fields(paragraph))
-
-	// Debug logging (remove in production)
-	fmt.Printf("DEBUG: Requested sentences: %d, Generated paragraph length: %d chars, Word count: %d\n",
-		sentences, len(paragraph), wordCount)
 
 	response := models.ParagraphResponse{
 		Paragraph: paragraph,
